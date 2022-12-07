@@ -29,8 +29,8 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.ADITYAUSERNAME }}
+          password: ${{ secrets.ADITYAPASSWORD }}
       - name: Build and push Docker images
         # env:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,21 +40,9 @@ jobs:
         with:
           tags: dgraph/dgraph-lambda:${{ steps.get_version.outputs.tag_name }}
           push: true
-          # Builder instance
-          # builder: # optional
-          # Build's context is the set of files located in the specified PATH or URL
-          # context: .
-          # Path to the Dockerfile
-          # file: ./Dockerfile
-          # List of build-time variables
-          # build-args: # optional
-          # List of metadata for an image
-          # labels: # optional
-          # Sets the target stage to build
-          # target: # optional
-          # List of target platforms for build
-          # platforms: # optional
-          # List of secrets to expose to the build (eg. key=value, GIT_AUTH_TOKEN=mytoken)
-          # secrets: # optional
-          # GitHub Token used to authenticate against a repository for Git context
-          # github-token: ${{ env.GITHUB_TOKEN }} # optional, default is ${{ github.token }}
+      - name: Push dgraph-lambda image to dockerhub with buildx # Instead of 1.4.0 do we need a env.LAMBDA_RELEASE_VERSION
+        run: |
+          docker buildx create --name lambdabuilder --driver docker-container
+          docker buildx use lambdabuilder
+          docker buildx build -t dgraph/dgraph-lambda:1.4.0 --push --platform=linux/arm64,linux/amd64 . 
+
