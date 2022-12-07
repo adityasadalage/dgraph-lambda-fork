@@ -33,7 +33,7 @@ jobs:
           push: true
       - name: Push dgraph-lambda image to dockerhub with buildx # Instead of 1.4.0 do we need a env.LAMBDA_RELEASE_VERSION
         run: |
-          docker buildx create --name lambdabuilder --driver docker-container
-          docker buildx use lambdabuilder
+          docker buildx create --name builder --driver docker-container
+          docker buildx use builder
           docker buildx build -t dgraph/dgraph-lambda:1.4.0 --push --platform=linux/arm64,linux/amd64 . 
 
